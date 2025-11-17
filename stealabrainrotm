@@ -3,94 +3,40 @@ local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Steal a Brainrot Magyar | Dev Tools",
-    LoadingTitle = "Admin Panel",
+    LoadingTitle = "Instant Interact",
     LoadingSubtitle = "Lopás Only",
 })
 
 local Tab = Window:CreateTab("Interaction", 4483362458)
 
--------------------------------------------------------
--- CONFIG
--------------------------------------------------------
-
-local AllowedRarities = {
-    ["Common"] = true,
-    ["Rare"] = true,
-    ["Legendary"] = true,
-    ["Mythic"] = true,
-    ["Secret"] = true,
-    ["BrainrotGod"] = true,
-}
-
-local HighlightColor = Color3.fromRGB(255, 80, 80)
-local LopasKey = Enum.KeyCode.E
-
--------------------------------------------------------
--- FUNCTIONS
--------------------------------------------------------
-
-local function HighlightItem(model)
-    if not model:FindFirstChild("Highlight") then
-        local hl = Instance.new("Highlight")
-        hl.Name = "Highlight"
-        hl.FillTransparency = 1
-        hl.OutlineColor = HighlightColor
-        hl.OutlineTransparency = 0
-        hl.Parent = model
-    end
-end
-
-local function IsAllowedRarity(model)
-    return AllowedRarities[model.Name] == true
-end
-
+-- Function for interacting only with "Lopás"
 local function InteractLopas()
-    for _, v in ipairs(workspace:GetDescendants()) do
+    for _, v in pairs(workspace:GetDescendants()) do
         if v:IsA("ProximityPrompt") and v.ActionText == "Lopás" then
-            local model = v.Parent
-            if model and IsAllowedRarity(model) then
-                fireproximityprompt(v)
-            end
+            fireproximityprompt(v)
         end
     end
 end
 
--------------------------------------------------------
--- UI ELEMENTS
--------------------------------------------------------
-
-Tab:CreateButton({
-    Name = "Highlight Lopás Items",
-    Callback = function()
-        for _, v in ipairs(workspace:GetDescendants()) do
-            if v:IsA("ProximityPrompt") and v.ActionText == "Lopás" then
-                HighlightItem(v.Parent)
-            end
-        end
-    end
-})
-
+-- One-time interact button
 Tab:CreateButton({
     Name = "Instant Lopás",
-    Callback = InteractLopas
+    Callback = function()
+        InteractLopas()
+    end
 })
 
-local autoLopas = false
+-- Auto-interact toggle
+local auto = false
+
 Tab:CreateToggle({
     Name = "Auto Lopás",
     CurrentValue = false,
     Callback = function(state)
-        autoLopas = state
-        while autoLopas do
+        auto = state
+        while auto do
             InteractLopas()
-            task.wait(0.15)
+            task.wait(0.1) -- 0.1 = fast, change if needed
         end
     end
-})
-
-Tab:CreateKeybind({
-    Name = "Lopás Keybind",
-    CurrentKeybind = LopasKey,
-    HoldToInteract = false,
-    Callback = InteractLopas
 })
