@@ -1,0 +1,103 @@
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Steal a Brainrot Magyar | Dev Tools",
+    LoadingTitle = "Lopás System",
+    LoadingSubtitle = "Filtered & Clean",
+})
+
+local Tab = Window:CreateTab("Interaction", 4483362458)
+
+-------------------------------------------------------
+-- CONFIG
+-------------------------------------------------------
+
+local AllowedRarities = {
+    ["Common"] = true,
+    ["Rare"] = true,
+    ["Legendary"] = true,
+    ["Mythic"] = true,
+    ["Secret"] = true,
+    ["BrainrotGod"] = true,
+}
+
+local HighlightColor = Color3.fromRGB(255, 80, 80) -- red outline
+local KeybindKey = Enum.KeyCode.E
+
+-------------------------------------------------------
+-- FUNCTIONS
+-------------------------------------------------------
+
+-- Highlight "Lopás" items only
+local function HighlightItem(model)
+    if not model:FindFirstChild("Highlight") then
+        local hl = Instance.new("Highlight")
+        hl.Name = "Highlight"
+        hl.FillTransparency = 1
+        hl.OutlineColor = HighlightColor
+        hl.OutlineTransparency = 0
+        hl.Parent = model
+    end
+end
+
+-- Check if model has allowed rarity
+local function IsAllowedRarity(model)
+    return AllowedRarities[model.Name] == true
+end
+
+-- Fire all "Lopás" prompts that match rarity
+local function InteractLopas()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") and v.ActionText == "Lopás" then
+            local parentModel = v.Parent
+            if parentModel and IsAllowedRarity(parentModel) then
+                fireproximityprompt(v)
+            end
+        end
+    end
+end
+
+-------------------------------------------------------
+-- UI ELEMENTS
+-------------------------------------------------------
+
+-- Highlight button
+Tab:CreateButton({
+    Name = "Highlight Lopás Items",
+    Callback = function()
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("ProximityPrompt") and v.ActionText == "Lopás" then
+                HighlightItem(v.Parent)
+            end
+        end
+    end
+})
+
+-- One-time interact
+Tab:CreateButton({
+    Name = "Instant Lopás (Filtered)",
+    Callback = InteractLopas
+})
+
+-- Auto Lopás toggle
+local auto = false
+Tab:CreateToggle({
+    Name = "Auto Lopás",
+    CurrentValue = false,
+    Callback = function(state)
+        auto = state
+        while auto do
+            InteractLopas()
+            task.wait(0.15)
+        end
+    end
+})
+
+-- Keybind
+Tab:CreateKeybind({
+    Name = "Lopás Hotkey",
+    CurrentKeybind = KeybindKey,
+    HoldToInteract = false,
+    Callback = InteractLopas
+})
