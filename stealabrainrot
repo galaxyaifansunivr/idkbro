@@ -1,0 +1,42 @@
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Steal a Brainrot Magyar | Dev Tools",
+    LoadingTitle = "Instant Interact",
+    LoadingSubtitle = "Lopás Only",
+})
+
+local Tab = Window:CreateTab("Interaction", 4483362458)
+
+-- Function for interacting only with "Lopás"
+local function InteractLopas()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") and v.ActionText == "Lopás" then
+            fireproximityprompt(v)
+        end
+    end
+end
+
+-- One-time interact button
+Tab:CreateButton({
+    Name = "Instant Lopás",
+    Callback = function()
+        InteractLopas()
+    end
+})
+
+-- Auto-interact toggle
+local auto = false
+
+Tab:CreateToggle({
+    Name = "Auto Lopás",
+    CurrentValue = false,
+    Callback = function(state)
+        auto = state
+        while auto do
+            InteractLopas()
+            task.wait(0.1) -- 0.1 = fast, change if needed
+        end
+    end
+})
