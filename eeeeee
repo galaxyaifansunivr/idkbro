@@ -1,0 +1,92 @@
+-- AdminSpawnAnimals.lua (Rayfield-based spawner for ReplicatedStorage.Models.Animals)
+-- 💠 Make sure your Rayfield UI is already initialized above this script
+
+-- Services
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+-- Paths
+local animalsFolder = ReplicatedStorage:WaitForChild("Models"):WaitForChild("Animals")
+
+-- Get player reference
+local player = Players.LocalPlayer
+
+-- 🪟 Rayfield window setup
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+	Name = "Steal a Pet & Brainrot | Dev Tools",
+	LoadingTitle = "Animal Spawner",
+	LoadingSubtitle = "By Rimuru",
+	ConfigurationSaving = {
+		Enabled = true,
+		FolderName = "StealPetAdmin",
+		FileName = "AnimalSpawner"
+	},
+})
+
+local SpawnTab = Window:CreateTab("Spawn", 4483362458)
+
+-- 🐾 dropdown list for animals
+local animalNames = {}
+for _, model in ipairs(animalsFolder:GetChildren()) do
+	table.insert(animalNames, model.Name)
+end
+
+local selectedAnimal = animalNames[1] or "Dog"
+
+SpawnTab:CreateDropdown({
+	Name = "Select Animal",
+	Options = animalNames,
+	CurrentOption = selectedAnimal,
+	Callback = function(option)
+		selectedAnimal = option
+	end,
+})
+
+-- 🧩 button to spawn animal
+SpawnTab:CreateButton({
+	Name = "Spawn Selected Animal",
+	Callback = function()
+		local animal = animalsFolder:FindFirstChild(selectedAnimal)
+		if not animal then
+			Rayfield:Notify({
+				Title = "Error",
+				Content = "Could not find " .. selectedAnimal,
+				Duration = 4,
+			})
+			return
+		end
+
+		local clone = animal:Clone()
+		clone.Parent = workspace
+
+		-- ensure position (SpawnPad or near player)
+		local spawnPad = workspace:FindFirstChild("SpawnPad")
+		local spawnCF
+		if spawnPad then
+			spawnCF = spawnPad.CFrame + Vector3.new(0, 3, 0)
+		else
+			local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+			if root then
+				spawnCF = root.CFrame * CFrame.new(5, 0, 0)
+			else
+				spawnCF = CFrame.new(0, 5, 0)
+			end
+		end
+
+		-- move animal to spawn point
+		if clone.PrimaryPart then
+			clone:PivotTo(spawnCF)
+		elseif clone:FindFirstChildWhichIsA("BasePart") then
+			local part = clone:FindFirstChildWhichIsA("BasePart")
+			part.CFrame = spawnCF
+		end
+
+		Rayfield:Notify({
+			Title = "Spawned!",
+			Content = "Spawned " .. selectedAnimal .. " successfully.",
+			Duration = 3,
+		})
+	end
+})
