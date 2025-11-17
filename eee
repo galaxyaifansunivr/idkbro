@@ -1,0 +1,140 @@
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Steal a Brainrot Magyar | Dev Tools",
+    LoadingTitle = "Advanced Interact",
+    LoadingSubtitle = "Rarity + Range",
+})
+
+local Tab = Window:CreateTab("Interaction", 4483362458)
+
+--------------------------------------------------------------------
+-- SETTINGS
+--------------------------------------------------------------------
+
+local RarityFilter = "All"
+local MaxRange = 999999 -- default infinite
+local autoLopas = false
+local autoMegvesz = false
+
+--------------------------------------------------------------------
+-- CHECK FUNCTION (rarity + distance)
+--------------------------------------------------------------------
+
+local function IsValidTarget(prompt, action)
+    if prompt.ActionText ~= action then return false end
+
+    local parent = prompt.Parent
+    if not parent then return false end
+
+    -- distance check
+    local player = game.Players.LocalPlayer
+    local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if not root then return false end
+
+    local dist = (parent.Position - root.Position).Magnitude
+    if dist > MaxRange then return false end
+
+    -- rarity check
+    local rarityObj = parent:FindFirstChild("Rarity")
+    local rarity = rarityObj and rarityObj.Value or "Unknown"
+
+    if RarityFilter ~= "All" and rarity ~= RarityFilter then
+        return false
+    end
+
+    prompt.MaxActivationDistance = 999999  -- force interact always
+
+    return true
+end
+
+--------------------------------------------------------------------
+-- LOPÁS FUNCTION
+--------------------------------------------------------------------
+
+local function InteractLopas()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") and IsValidTarget(v, "Lopás") then
+            fireproximityprompt(v)
+        end
+    end
+end
+
+--------------------------------------------------------------------
+-- MEGVESZ FUNCTION
+--------------------------------------------------------------------
+
+local function InteractMegvesz()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") and IsValidTarget(v, "Megvesz") then
+            fireproximityprompt(v)
+        end
+    end
+end
+
+--------------------------------------------------------------------
+-- UI
+--------------------------------------------------------------------
+
+-- BUTTONS
+Tab:CreateButton({
+    Name = "Instant Lopás",
+    Callback = function()
+        InteractLopas()
+    end
+})
+
+Tab:CreateButton({
+    Name = "Instant Megvesz",
+    Callback = function()
+        InteractMegvesz()
+    end
+})
+
+-- TOGGLES
+Tab:CreateToggle({
+    Name = "Auto Lopás",
+    CurrentValue = false,
+    Callback = function(state)
+        autoLopas = state
+        while autoLopas do
+            InteractLopas()
+            task.wait(0.00001)
+        end
+    end
+})
+
+Tab:CreateToggle({
+    Name = "Auto Megvesz",
+    CurrentValue = false,
+    Callback = function(state)
+        autoMegvesz = state
+        while autoMegvesz do
+            InteractMegvesz()
+            task.wait(0.00001)
+        end
+    end
+})
+
+-- RANGE SLIDER
+Tab:CreateSlider({
+    Name = "Range",
+    Range = {5, 999999},
+    Increment = 5,
+    CurrentValue = MaxRange,
+    Suffix = " studs",
+    Callback = function(value)
+        MaxRange = value
+    end
+})
+
+-- RARITY FILTER
+Tab:CreateDropdown({
+    Name = "Rarity Filter",
+    Options = {"All", "Common", "Rare", "Epic", "Legendary", "Mythic", "Secret", "Brainrot God"},
+    CurrentOption = "All",
+    Callback = function(option)
+        RarityFilter = option
+    end
+})
