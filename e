@@ -1,0 +1,76 @@
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Steal a Brainrot Magyar | Dev Tools",
+    LoadingTitle = "Instant Interact",
+    LoadingSubtitle = "Lopás & Megvesz",
+})
+
+local Tab = Window:CreateTab("Interaction", 4483362458)
+
+--------------------------------------------------------------------
+--  LOPÁS
+--------------------------------------------------------------------
+
+local function InteractLopas()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") and v.ActionText == "Lopás" then
+            fireproximityprompt(v)
+        end
+    end
+end
+
+Tab:CreateButton({
+    Name = "Instant Lopás",
+    Callback = function()
+        InteractLopas()
+    end
+})
+
+local autoLopas = false
+
+Tab:CreateToggle({
+    Name = "Auto Lopás",
+    CurrentValue = false,
+    Callback = function(state)
+        autoLopas = state
+        while autoLopas do
+            InteractLopas()
+            task.wait(0.00001)
+        end
+    end
+})
+
+--------------------------------------------------------------------
+--  MEGVESZ
+--------------------------------------------------------------------
+
+local function InteractMegvesz()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") and v.ActionText == "Megvesz" then
+            fireproximityprompt(v)
+        end
+    end
+end
+
+Tab:CreateButton({
+    Name = "Instant Megvesz",
+    Callback = function()
+        InteractMegvesz()
+    end
+})
+
+local autoMegvesz = false
+
+Tab:CreateToggle({
+    Name = "Auto Megvesz",
+    CurrentValue = false,
+    Callback = function(state)
+        autoMegvesz = state
+        while autoMegvesz do
+            InteractMegvesz()
+            task.wait(0.00001)
+        end
+    end
+})
