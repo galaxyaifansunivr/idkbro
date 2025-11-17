@@ -4,7 +4,7 @@ local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 local Window = Rayfield:CreateWindow({
     Name = "Steal a Brainrot Magyar | Dev Tools",
     LoadingTitle = "Admin Panel",
-    LoadingSubtitle = "Lopás & Elad",
+    LoadingSubtitle = "Lopás Only",
 })
 
 local Tab = Window:CreateTab("Interaction", 4483362458)
@@ -22,9 +22,8 @@ local AllowedRarities = {
     ["BrainrotGod"] = true,
 }
 
-local HighlightColor = Color3.fromRGB(255, 80, 80) 
+local HighlightColor = Color3.fromRGB(255, 80, 80)
 local LopasKey = Enum.KeyCode.E
-local EladKey = Enum.KeyCode.R
 
 -------------------------------------------------------
 -- FUNCTIONS
@@ -45,22 +44,9 @@ local function IsAllowedRarity(model)
     return AllowedRarities[model.Name] == true
 end
 
--- Lopás
 local function InteractLopas()
     for _, v in ipairs(workspace:GetDescendants()) do
         if v:IsA("ProximityPrompt") and v.ActionText == "Lopás" then
-            local model = v.Parent
-            if model and IsAllowedRarity(model) then
-                fireproximityprompt(v)
-            end
-        end
-    end
-end
-
--- Elad (Sell)
-local function InteractElad()
-    for _, v in ipairs(workspace:GetDescendants()) do
-        if v:IsA("ProximityPrompt") and v.ActionText == "Elad" then
             local model = v.Parent
             if model and IsAllowedRarity(model) then
                 fireproximityprompt(v)
@@ -73,31 +59,22 @@ end
 -- UI ELEMENTS
 -------------------------------------------------------
 
--- Highlight Lopás + Elad
 Tab:CreateButton({
-    Name = "Highlight Lopás & Elad Items",
+    Name = "Highlight Lopás Items",
     Callback = function()
         for _, v in ipairs(workspace:GetDescendants()) do
-            if v:IsA("ProximityPrompt") and (v.ActionText == "Lopás" or v.ActionText == "Elad") then
+            if v:IsA("ProximityPrompt") and v.ActionText == "Lopás" then
                 HighlightItem(v.Parent)
             end
         end
     end
 })
 
--- One-tap Lopás
 Tab:CreateButton({
     Name = "Instant Lopás",
     Callback = InteractLopas
 })
 
--- One-tap Elad
-Tab:CreateButton({
-    Name = "Instant Elad",
-    Callback = InteractElad
-})
-
--- Auto Lopás
 local autoLopas = false
 Tab:CreateToggle({
     Name = "Auto Lopás",
@@ -111,32 +88,9 @@ Tab:CreateToggle({
     end
 })
 
--- Auto Elad
-local autoElad = false
-Tab:CreateToggle({
-    Name = "Auto Elad",
-    CurrentValue = false,
-    Callback = function(state)
-        autoElad = state
-        while autoElad do
-            InteractElad()
-            task.wait(0.15)
-        end
-    end
-})
-
--- Keybind: Lopás
 Tab:CreateKeybind({
     Name = "Lopás Keybind",
     CurrentKeybind = LopasKey,
     HoldToInteract = false,
     Callback = InteractLopas
-})
-
--- Keybind: Elad
-Tab:CreateKeybind({
-    Name = "Elad Keybind",
-    CurrentKeybind = EladKey,
-    HoldToInteract = false,
-    Callback = InteractElad
 })
