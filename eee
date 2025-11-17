@@ -14,8 +14,9 @@ local Tab = Window:CreateTab("Spawner", 4483362458)
 ------------------------------------------------------------------------
 
 local AnimalsFolder = game:GetService("ReplicatedStorage").Models.Animals
+local SelectedAnimal = nil  -- stores the dropdown choice
 
--- Get all animal names automatically
+-- Get all animal names
 local AnimalNames = {}
 for _, model in ipairs(AnimalsFolder:GetChildren()) do
     table.insert(AnimalNames, model.Name)
@@ -25,8 +26,10 @@ end
 -- SPAWN FUNCTION
 ------------------------------------------------------------------------
 
-local function SpawnBrainrot(modelName)
-    local model = AnimalsFolder:FindFirstChild(modelName)
+local function SpawnBrainrot()
+    if not SelectedAnimal then return end
+
+    local model = AnimalsFolder:FindFirstChild(SelectedAnimal)
     if not model then return end
 
     local player = game.Players.LocalPlayer
@@ -35,31 +38,39 @@ local function SpawnBrainrot(modelName)
 
     if not root then return end
 
-    -- Clone + spawn above the player
+    -- clone model
     local clone = model:Clone()
     clone.Parent = workspace
 
-    -- Set PrimaryPart if missing
+    -- ensure PrimaryPart
     if not clone.PrimaryPart then
         clone.PrimaryPart = clone:FindFirstChildWhichIsA("BasePart")
     end
 
-    if clone.PrimaryPart then
-        clone:SetPrimaryPartCFrame(root.CFrame * CFrame.new(0, 3, 0))
-    end
+    -- spawn above player
+    clone:SetPrimaryPartCFrame(root.CFrame * CFrame.new(0, 3, 0))
 
-    print("Spawned:", modelName)
+    print("Spawned:", SelectedAnimal)
 end
 
 ------------------------------------------------------------------------
--- UI DROPDOWN
+-- UI ELEMENTS
 ------------------------------------------------------------------------
 
+-- Dropdown for selecting the animal
 Tab:CreateDropdown({
     Name = "Choose Brainrot Animal",
     Options = AnimalNames,
-    CurrentOption = AnimalNames[1],
+    CurrentOption = nil,
     Callback = function(option)
-        SpawnBrainrot(option)
+        SelectedAnimal = option
     end,
+})
+
+-- Button to spawn selected animal
+Tab:CreateButton({
+    Name = "Spawn Selected Brainrot",
+    Callback = function()
+        SpawnBrainrot()
+    end
 })
