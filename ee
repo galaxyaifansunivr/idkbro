@@ -4,7 +4,7 @@ local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 local Window = Rayfield:CreateWindow({
     Name = "Steal a Brainrot Magyar | Dev Tools",
     LoadingTitle = "Instant Interact",
-    LoadingSubtitle = "Lopás & Megvesz",
+    LoadingSubtitle = "Lopás & Megvesz (Global Range)",
 })
 
 local Tab = Window:CreateTab("Interaction", 4483362458)
@@ -16,6 +16,7 @@ local Tab = Window:CreateTab("Interaction", 4483362458)
 local function InteractLopas()
     for _, v in pairs(workspace:GetDescendants()) do
         if v:IsA("ProximityPrompt") and v.ActionText == "Lopás" then
+            v.MaxActivationDistance = 999999 -- GLOBAL STEAL RANGE
             fireproximityprompt(v)
         end
     end
@@ -49,6 +50,7 @@ Tab:CreateToggle({
 local function InteractMegvesz()
     for _, v in pairs(workspace:GetDescendants()) do
         if v:IsA("ProximityPrompt") and v.ActionText == "Megvesz" then
+            v.MaxActivationDistance = 999999 -- GLOBAL BUY RANGE
             fireproximityprompt(v)
         end
     end
