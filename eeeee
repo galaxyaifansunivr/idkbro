@@ -1,0 +1,82 @@
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Steal a Brainrot Magyar | Dev Tools",
+    LoadingTitle = "Brainrot Spawner",
+    LoadingSubtitle = "Direct to MovingAnimals",
+})
+
+local Tab = Window:CreateTab("Spawner", 4483362458)
+
+--------------------------------------------------------------------
+-- SETTINGS
+--------------------------------------------------------------------
+
+local AnimalsFolder = game:GetService("ReplicatedStorage").Models.Animals
+local MovingAnimals = workspace:WaitForChild("MovingAnimals")
+local SelectedAnimal = nil
+
+-- Collect all animal names
+local AnimalNames = {}
+for _, model in ipairs(AnimalsFolder:GetChildren()) do
+    table.insert(AnimalNames, model.Name)
+end
+
+--------------------------------------------------------------------
+-- SPAWN FUNCTION
+--------------------------------------------------------------------
+
+local function SpawnBrainrot()
+    if not SelectedAnimal then return end
+
+    local src = AnimalsFolder:FindFirstChild(SelectedAnimal)
+    if not src then return end
+
+    local player = game.Players.LocalPlayer
+    local char = player.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    -- Unique model name (same format your game uses)
+    local uniqueName = "RoadAnimal_" .. SelectedAnimal .. "_" .. tostring(os.clock())
+
+    -- Clone the animal
+    local clone = src:Clone()
+    clone.Name = uniqueName
+    clone.Parent = MovingAnimals  -- <-- DIRECTLY INTO workspace.MovingAnimals
+
+    -- Ensure PrimaryPart exists
+    if not clone.PrimaryPart then
+        clone.PrimaryPart = clone:FindFirstChildWhichIsA("BasePart")
+    end
+
+    -- Spawn above the player
+    if clone.PrimaryPart then
+        clone:SetPrimaryPartCFrame(root.CFrame * CFrame.new(0, 3, 0))
+    end
+
+    print("Spawned animal:", uniqueName)
+end
+
+--------------------------------------------------------------------
+-- UI
+--------------------------------------------------------------------
+
+-- Dropdown selector
+Tab:CreateDropdown({
+    Name = "Choose Animal",
+    Options = AnimalNames,
+    CurrentOption = nil,
+    Callback = function(option)
+        SelectedAnimal = option
+    end,
+})
+
+-- Spawn button
+Tab:CreateButton({
+    Name = "Spawn Selected Brainrot",
+    Callback = function()
+        SpawnBrainrot()
+    end
+})
