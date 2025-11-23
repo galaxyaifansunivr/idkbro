@@ -1,0 +1,129 @@
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Flip Detector | Tester Tools",
+    LoadingTitle = "Coin Flip",
+    LoadingSubtitle = "Heads / Tails Detection",
+})
+
+local Tab = Window:CreateTab("Coin Flip", 4483362458)
+
+---------------------------------------------------------------------
+-- SETTINGS
+---------------------------------------------------------------------
+
+local coin = workspace:WaitForChild("Coin") -- CHANGE TO YOUR MODEL
+local autoDetect = false
+local forcedMode = "None"  -- "Heads", "Tails", or "None"
+local ResultLabel = nil
+
+---------------------------------------------------------------------
+-- DETECTION FUNCTION
+---------------------------------------------------------------------
+
+local function GetFlipResult()
+    if not coin or not coin.PrimaryPart then
+        return "No Coin"
+    end
+
+    local up = coin.PrimaryPart.CFrame.UpVector
+
+    if up.Y > 0.5 then
+        return "HEADS"
+    elseif up.Y < -0.5 then
+        return "TAILS"
+    else
+        return "SIDE / UNKNOWN"
+    end
+end
+
+---------------------------------------------------------------------
+-- FORCE FUNCTIONS
+---------------------------------------------------------------------
+
+local function ForceHeads()
+    if not coin.PrimaryPart then return end
+
+    -- HEADS = coin faces upward (normal orientation)
+    coin:SetPrimaryPartCFrame(
+        CFrame.new(coin.PrimaryPart.Position)
+        * CFrame.Angles(0, 0, 0)
+    )
+end
+
+local function ForceTails()
+    if not coin.PrimaryPart then return end
+
+    -- TAILS = coin upside down (180-degree flip)
+    coin:SetPrimaryPartCFrame(
+        CFrame.new(coin.PrimaryPart.Position)
+        * CFrame.Angles(math.rad(180), 0, 0)
+    )
+end
+
+---------------------------------------------------------------------
+-- AUTO LOOP
+---------------------------------------------------------------------
+
+task.spawn(function()
+    while true do
+        if forcedMode == "Heads" then
+            ForceHeads()
+        elseif forcedMode == "Tails" then
+            ForceTails()
+        end
+
+        task.wait(0.05)
+    end
+end)
+
+---------------------------------------------------------------------
+-- UI ELEMENTS
+---------------------------------------------------------------------
+
+ResultLabel = Tab:CreateLabel("Result: Waiting...")
+
+Tab:CreateButton({
+    Name = "Check Flip",
+    Callback = function()
+        ResultLabel:Set("Result: " .. GetFlipResult())
+    end
+})
+
+Tab:CreateToggle({
+    Name = "Auto Detect",
+    CurrentValue = false,
+    Callback = function(state)
+        autoDetect = state
+        while autoDetect do
+            ResultLabel:Set("Result: " .. GetFlipResult())
+            task.wait(0.1)
+        end
+    end
+})
+
+---------------------------------------------------------------------
+-- FORCE MODE BUTTONS
+---------------------------------------------------------------------
+
+Tab:CreateButton({
+    Name = "Force HEADS",
+    Callback = function()
+        forcedMode = "Heads"
+    end
+})
+
+Tab:CreateButton({
+    Name = "Force TAILS",
+    Callback = function()
+        forcedMode = "Tails"
+    end
+})
+
+Tab:CreateButton({
+    Name = "Disable Force Mode",
+    Callback = function()
+        forcedMode = "None"
+    end
+})
