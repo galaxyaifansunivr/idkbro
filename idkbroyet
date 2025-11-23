@@ -4,53 +4,46 @@ local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 local Window = Rayfield:CreateWindow({
     Name = "Flip Tester | Dev Tools",
     LoadingTitle = "Flip Controls",
-    LoadingSubtitle = "Force Heads / Tails",
+    LoadingSubtitle = "Always Heads Mode",
 })
 
 local Tab = Window:CreateTab("Flip", 4483362458)
 
 local sendRoll = game:GetService("ReplicatedStorage"):WaitForChild("sendRoll")
+local sendRollResults = game:GetService("ReplicatedStorage"):WaitForChild("sendRollResults")
 
--- FORCE HEADS
+local alwaysHeads = false
+
+-----------------------------------------------------------------------
+-- SEND HEADS
+-----------------------------------------------------------------------
+local function SendHeads()
+    -- Your game uses this exactly:
+    sendRoll:InvokeServer("Heads")
+    sendRollResults:InvokeServer("Heads")
+end
+
+-----------------------------------------------------------------------
+-- BUTTON: FORCE HEADS ONCE
+-----------------------------------------------------------------------
 Tab:CreateButton({
-    Name = "Force HEADS",
+    Name = "Force HEADS (One Flip)",
     Callback = function()
-        sendRoll:InvokeServer("Heads")
+        SendHeads()
     end
 })
 
--- FORCE TAILS
-Tab:CreateButton({
-    Name = "Force TAILS",
-    Callback = function()
-        sendRoll:InvokeServer("Tails")
-    end
-})
-
--- AUTO HEADS MODE
-local autoHeads = false
+-----------------------------------------------------------------------
+-- TOGGLE: ALWAYS HEADS
+-----------------------------------------------------------------------
 Tab:CreateToggle({
-    Name = "Auto Heads",
+    Name = "Always Heads Mode",
     CurrentValue = false,
     Callback = function(state)
-        autoHeads = state
-        while autoHeads do
-            sendRoll:InvokeServer("Heads")
-            task.wait(0.1)
-        end
-    end
-})
-
--- AUTO TAILS MODE
-local autoTails = false
-Tab:CreateToggle({
-    Name = "Auto Tails",
-    CurrentValue = false,
-    Callback = function(state)
-        autoTails = state
-        while autoTails do
-            sendRoll:InvokeServer("Tails")
-            task.wait(0.1)
+        alwaysHeads = state
+        while alwaysHeads do
+            SendHeads() -- keeps sending Heads no matter what
+            task.wait(0.1) -- you can increase or decrease speed
         end
     end
 })
