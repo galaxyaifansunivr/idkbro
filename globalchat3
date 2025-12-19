@@ -1,5 +1,3 @@
--- sanity check
-print("SCRIPT EXECUTED")
 
 -- load Rayfield from OFFICIAL WEBSITE (not GitHub)
 local Rayfield = loadstring(game:HttpGet("https://rayfield.dev/source"))()
