@@ -1,0 +1,64 @@
+--------------------------------------------------------------------
+-- Load Rayfield (SAME loader as your working script)
+--------------------------------------------------------------------
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Global Chat | Dev Tools",
+    LoadingTitle = "Instant Interact",
+    LoadingSubtitle = "Global Message",
+})
+
+local Tab = Window:CreateTab("Chat", 4483362458)
+
+--------------------------------------------------------------------
+-- GLOBAL CHAT FUNCTION
+--------------------------------------------------------------------
+
+local function SendGlobal()
+    local TextChatService = game:GetService("TextChatService")
+
+    -- New Roblox chat
+    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+        local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+        if channel then
+            channel:SendAsync("global")
+        end
+    else
+        -- Old Roblox chat
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local event = ReplicatedStorage:FindFirstChild("SayMessageRequest")
+        if event then
+            event:FireServer("global", "All")
+        end
+    end
+end
+
+--------------------------------------------------------------------
+-- BUTTON
+--------------------------------------------------------------------
+
+Tab:CreateButton({
+    Name = "Send GLOBAL",
+    Callback = function()
+        SendGlobal()
+    end
+})
+
+--------------------------------------------------------------------
+-- AUTO GLOBAL (OPTIONAL)
+--------------------------------------------------------------------
+
+local autoGlobal = false
+
+Tab:CreateToggle({
+    Name = "Auto GLOBAL",
+    CurrentValue = false,
+    Callback = function(state)
+        autoGlobal = state
+        while autoGlobal do
+            SendGlobal()
+            task.wait(1) -- cooldown (safe)
+        end
+    end
+})
