@@ -1,0 +1,33 @@
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/shlexware/RayfieldLibrary/master/source"
+))()
+
+-- Create Window
+local Window = Rayfield:CreateWindow({
+    Name = "Rayfield Global Test",
+    LoadingTitle = "Loading..."
+})
+
+-- Button that writes "global"
+Window:CreateButton({
+    Name = "Write Global",
+    Callback = function()
+        local TextChatService = game:GetService("TextChatService")
+
+        -- NEW Roblox chat system
+        if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+            local channel = TextChatService.TextChannels.RBXGeneral
+            if channel then
+                channel:SendAsync("global")
+            end
+        else
+            -- OLD chat system fallback
+            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+            local SayMessageRequest = ReplicatedStorage:FindFirstChild("SayMessageRequest")
+            if SayMessageRequest then
+                SayMessageRequest:FireServer("global", "All")
+            end
+        end
+    end
+})
