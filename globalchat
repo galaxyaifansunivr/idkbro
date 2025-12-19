@@ -1,6 +1,5 @@
 -- Load Rayfield
-local Rayfield = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/shlexware/RayfieldLibrary/master/source"
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 ))()
 
 -- Create Window
