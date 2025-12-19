@@ -1,6 +1,6 @@
 
 -- load Rayfield from OFFICIAL WEBSITE (not GitHub)
-local Rayfield = loadstring(game:HttpGet("https://rayfield.dev/source"))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- create window
 local Window = Rayfield:CreateWindow({
