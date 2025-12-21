@@ -1,0 +1,64 @@
+-- THE FORGE | Kavo UI (Executor Only)
+
+-- Load Kavo UI
+local Library = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"
+))()
+
+local Window = Library.CreateLib("⚒ THE FORGE", "DarkTheme")
+
+-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+
+-- Toggles
+local AutoMine = false
+local AutoKill = false
+
+--------------------------------------------------
+-- TAB
+--------------------------------------------------
+local MainTab = Window:NewTab("Automation")
+local MainSection = MainTab:NewSection("Forge Systems")
+
+MainSection:NewToggle("Auto Mine Ores", "Automatically mines ores", function(state)
+    AutoMine = state
+end)
+
+MainSection:NewToggle("Auto Kill Mobs", "Automatically kills mobs", function(state)
+    AutoKill = state
+end)
+
+--------------------------------------------------
+-- CORE LOOP
+--------------------------------------------------
+RunService.Heartbeat:Connect(function()
+    -- AUTO MINE
+    if AutoMine then
+        for _, v in pairs(workspace:GetDescendants()) do
+            -- CHANGE THIS if your ore naming is different
+            if v:IsA("Model") and v.Name:lower():find("ore") then
+                -- Try ProximityPrompt
+                for _, p in pairs(v:GetDescendants()) do
+                    if p:IsA("ProximityPrompt") then
+                        fireproximityprompt(p)
+                    end
+                end
+            end
+        end
+    end
+
+    -- AUTO KILL
+    if AutoKill then
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Model") and v:FindFirstChild("Humanoid") then
+                local hum = v.Humanoid
+                if hum.Health > 0 then
+                    -- Simple touch/attack bypass
+                    hum.Health = 0
+                end
+            end
+        end
+    end
+end)
