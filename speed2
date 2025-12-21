@@ -1,0 +1,83 @@
+-- THE FORGE | Rayfield Auto Mine (Click-Based)
+
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+-- Window
+local Window = Rayfield:CreateWindow({
+    Name = "⚒ THE FORGE | Auto Mine",
+    LoadingTitle = "THE FORGE",
+    LoadingSubtitle = "Angel Roll 🪽",
+    ConfigurationSaving = {
+        Enabled = false
+    }
+})
+
+-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+-- State
+local AutoMine = false
+
+--------------------------------------------------
+-- TAB
+--------------------------------------------------
+local Tab = Window:CreateTab("Mining", 4483362458)
+
+Tab:CreateToggle({
+    Name = "Auto Mine Pebble",
+    CurrentValue = false,
+    Callback = function(v)
+        AutoMine = v
+    end
+})
+
+--------------------------------------------------
+-- FUNCTIONS
+--------------------------------------------------
+
+-- Equip any tool (pickaxe)
+local function equipTool()
+    local char = player.Character
+    if not char then return end
+
+    local tool = player.Backpack:FindFirstChildOfClass("Tool")
+    if tool then
+        tool.Parent = char
+    end
+end
+
+-- Simulate mouse click
+local function clickMouse()
+    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+    task.wait(0.05)
+    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+end
+
+--------------------------------------------------
+-- CORE LOOP
+--------------------------------------------------
+RunService.Heartbeat:Connect(function()
+    if not AutoMine then return end
+
+    equipTool()
+
+    for _, v in pairs(workspace:GetDescendants()) do
+        -- Pebble can be Model or Part
+        if v.Name == "Pebble" and (v:IsA("Model") or v:IsA("BasePart")) then
+            local part = v:IsA("Model") and v:FindFirstChildWhichIsA("BasePart") or v
+            if part then
+                -- Aim camera at the ore
+                camera.CFrame = CFrame.new(camera.CFrame.Position, part.Position)
+
+                -- Click repeatedly (slow HP drain)
+                clickMouse()
+            end
+        end
+    end
+end)
