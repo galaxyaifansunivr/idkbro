@@ -1,0 +1,67 @@
+-- THE FORGE - Dev Panel (Legit, Your Game)
+-- Put this in StarterPlayer > StarterPlayerScripts (LocalScript)
+
+-- Kavo UI (UI only, safe for own game)
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+
+-- Window
+local Window = Library.CreateLib("⚒ THE FORGE – Dev Panel", "DarkTheme")
+
+-- Services
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Character / Humanoid
+local function getHumanoid()
+    local char = player.Character or player.CharacterAdded:Wait()
+    return char:WaitForChild("Humanoid")
+end
+
+local humanoid = getHumanoid()
+
+player.CharacterAdded:Connect(function()
+    humanoid = getHumanoid()
+end)
+
+--------------------------------------------------
+-- PLAYER TAB
+--------------------------------------------------
+local PlayerTab = Window:NewTab("Player")
+local PlayerSection = PlayerTab:NewSection("Player Stats")
+
+-- WalkSpeed
+PlayerSection:NewSlider("WalkSpeed", "Change player speed", 100, 16, function(v)
+    humanoid.WalkSpeed = v
+end)
+
+-- JumpPower
+PlayerSection:NewSlider("JumpPower", "Change jump power", 200, 50, function(v)
+    humanoid.JumpPower = v
+end)
+
+--------------------------------------------------
+-- WORLD TAB
+--------------------------------------------------
+local WorldTab = Window:NewTab("World")
+local WorldSection = WorldTab:NewSection("World Settings")
+
+-- Gravity
+WorldSection:NewSlider("Gravity", "World gravity", 196, 50, function(v)
+    workspace.Gravity = v
+end)
+
+--------------------------------------------------
+-- FORGE TAB
+--------------------------------------------------
+local ForgeTab = Window:NewTab("Forge")
+local ForgeSection = ForgeTab:NewSection("Forge Tools")
+
+-- Reset Character
+ForgeSection:NewButton("Reset Character", "Respawn player", function()
+    player.Character:BreakJoints()
+end)
+
+-- Notification
+ForgeSection:NewButton("Test Notification", "UI test", function()
+    Library:Notify("THE FORGE", "Dev panel active ⚒", 4)
+end)
