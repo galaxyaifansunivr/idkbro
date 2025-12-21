@@ -1,0 +1,70 @@
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+-- Window
+local Window = Rayfield:CreateWindow({
+    Name = "Speed Controller",
+    LoadingTitle = "Rayfield Speed",
+    LoadingSubtitle = "WalkSpeed",
+    ConfigurationSaving = {
+        Enabled = false
+    }
+})
+
+-- Tab
+local Tab = Window:CreateTab("Speed", 4483362458)
+
+-- Vars
+local player = game.Players.LocalPlayer
+local humanoid
+local speedEnabled = false
+local speedValue = 32 -- default boosted speed
+
+-- Get humanoid safely
+local function getHumanoid()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        humanoid = player.Character.Humanoid
+    end
+end
+
+player.CharacterAdded:Connect(function()
+    task.wait(1)
+    getHumanoid()
+end)
+
+getHumanoid()
+
+-- Toggle
+Tab:CreateToggle({
+    Name = "Enable Speed",
+    CurrentValue = false,
+    Callback = function(value)
+        speedEnabled = value
+        if humanoid then
+            humanoid.WalkSpeed = value and speedValue or 16
+        end
+    end
+})
+
+-- Slider
+Tab:CreateSlider({
+    Name = "WalkSpeed",
+    Range = {16, 100},
+    Increment = 1,
+    CurrentValue = speedValue,
+    Callback = function(value)
+        speedValue = value
+        if speedEnabled and humanoid then
+            humanoid.WalkSpeed = speedValue
+        end
+    end
+})
+
+-- Keep speed applied
+game:GetService("RunService").RenderStepped:Connect(function()
+    if speedEnabled and humanoid then
+        if humanoid.WalkSpeed ~= speedValue then
+            humanoid.WalkSpeed = speedValue
+        end
+    end
+end)
