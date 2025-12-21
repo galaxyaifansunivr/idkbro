@@ -1,45 +1,57 @@
--- THE FORGE | Kavo UI (Executor Only)
+-- THE FORGE | Rayfield UI (Executor Only)
 
--- Load Kavo UI
-local Library = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"
-))()
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
-local Window = Library.CreateLib("⚒ THE FORGE", "DarkTheme")
+-- Window
+local Window = Rayfield:CreateWindow({
+    Name = "⚒ THE FORGE | Angel Roll",
+    LoadingTitle = "THE FORGE",
+    LoadingSubtitle = "Rayfield UI",
+    ConfigurationSaving = {
+        Enabled = false
+    }
+})
 
 -- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
--- Toggles
+-- States
 local AutoMine = false
 local AutoKill = false
 
 --------------------------------------------------
 -- TAB
 --------------------------------------------------
-local MainTab = Window:NewTab("Automation")
-local MainSection = MainTab:NewSection("Forge Systems")
+local Tab = Window:CreateTab("Automation", 4483362458)
 
-MainSection:NewToggle("Auto Mine Ores", "Automatically mines ores", function(state)
-    AutoMine = state
-end)
+Tab:CreateToggle({
+    Name = "Auto Mine Pebble",
+    CurrentValue = false,
+    Callback = function(v)
+        AutoMine = v
+    end
+})
 
-MainSection:NewToggle("Auto Kill Mobs", "Automatically kills mobs", function(state)
-    AutoKill = state
-end)
+Tab:CreateToggle({
+    Name = "Auto Kill Mobs",
+    CurrentValue = false,
+    Callback = function(v)
+        AutoKill = v
+    end
+})
 
 --------------------------------------------------
 -- CORE LOOP
 --------------------------------------------------
 RunService.Heartbeat:Connect(function()
-    -- AUTO MINE
+    -- AUTO MINE (Pebble)
     if AutoMine then
         for _, v in pairs(workspace:GetDescendants()) do
-            -- CHANGE THIS if your ore naming is different
-            if v:IsA("Model") and v.Name:lower():find("ore") then
-                -- Try ProximityPrompt
+            if v:IsA("Model") and v.Name == "Pebble" then
+                -- ProximityPrompt mining
                 for _, p in pairs(v:GetDescendants()) do
                     if p:IsA("ProximityPrompt") then
                         fireproximityprompt(p)
@@ -49,13 +61,12 @@ RunService.Heartbeat:Connect(function()
         end
     end
 
-    -- AUTO KILL
+    -- AUTO KILL (Any mob with Humanoid)
     if AutoKill then
         for _, v in pairs(workspace:GetDescendants()) do
             if v:IsA("Model") and v:FindFirstChild("Humanoid") then
                 local hum = v.Humanoid
                 if hum.Health > 0 then
-                    -- Simple touch/attack bypass
                     hum.Health = 0
                 end
             end
